@@ -16,11 +16,11 @@ __consumer_offsets 16 0
 __consumer_offsets 45 0
 __consumer_offsets 12 0
 __consumer_offsets 41 0
-__consumer_offsets 24 296
+__consumer_offsets 24 1176
 __consumer_offsets 20 0
 __consumer_offsets 49 0
 __consumer_offsets 0 0
-confluent-kp 0 765
+confluent-kp 0 2340
 __consumer_offsets 29 0
 __consumer_offsets 25 0
 __consumer_offsets 8 0

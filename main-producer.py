@@ -137,10 +137,10 @@ while True:
 
             producer.flush()
 
-            time.sleep(10)
+            time.sleep(0)
             continue
         else:
-            time.sleep(10)
+            time.sleep(0)
             continue
 
 

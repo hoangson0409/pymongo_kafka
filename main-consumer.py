@@ -21,23 +21,41 @@ import faust
 import mlflow
 from pymongo import MongoClient
 
+print('finish importing')
 conf_cons = {'bootstrap.servers': 'localhost:9092',
         'group.id': "foo",
         'auto.offset.reset': 'earliest'}
 
-consumer = Consumer(conf_cons)
-consumer.subscribe(['confluent-kp'])
+try:
+    consumer = Consumer(conf_cons)
+    consumer.subscribe(['confluent-kp'])
+    print('Consumer initialization finishes')
+except:
+    print('Consumer initialization got error')
 
-client = MongoClient('localhost', 27017)
+try:
+    client = MongoClient('localhost', 27017)
+    print("Connected successfully!!!")
+except:
+    print("Could not connect to MongoDB")
 
 while True:
-    mess_received = consume(consumer,1)
+    mess_received = consumer.poll(1.0)
 
+    if mess_received is None:
+        continue
+    if mess_received.error():
+        if mess_received.error().code() == KafkaError._PARTITION_EOF:
+            continue
+        else:
+            print(mess_received.error())
+            break
 
-    print('Received message: {}'.format(mess_received.value().decode('utf-8')))
+    insert_mess = json.loads(mess_received.value().decode('utf-8'))
 
-    print(type(json.loads(mess_received.value().decode('utf-8'))))
-
-
-    # db=client.kafka_mongo
-    # db.messages.insert_one(mess_received)
+    try:
+        db=client.kafka_mongo
+        db.messages.insert_one(insert_mess)
+        print('Records inserted into MongoDB successfully')
+    except:
+        print('Something wrong went during insertion')
