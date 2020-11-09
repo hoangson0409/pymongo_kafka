@@ -83,15 +83,10 @@ async def execute(phone,latest_message_id):
         if total_count_limit != 0 and total_messages >= total_count_limit:
             break
 
-
-
         latest_message_id = all_messages[0]['id']
         content = all_messages[0]['message']
 
         return (content,latest_message_id,all_messages)
-
-
-
 
 
 
@@ -106,29 +101,27 @@ conf_prod = {'bootstrap.servers': "localhost:9092",
         'client.id': socket.gethostname()}
 producer = Producer(conf_prod)
 
+#############################################################
+#TESTING
+from agent import adding,Add,send_value
+
+async def multitask(task1, task2):
+    res = await asyncio.gather(task1,task2,return_exceptions=True)
+    return res
+
+
 while True:
     with client:
         #get result from main function
-        result = client.loop.run_until_complete(execute(phone, latest_message_id))
+        result,res2 = client.loop.run_until_complete(multitask(execute(phone, latest_message_id),send_value()))
+        print('here is the type of clien loop: ', type(client.loop))
+
 
         #extract latest message_id, content and raw content (all_messages) from telegram
-        all_messages = result[1]
+        #latest_message_id = result[1]
         content = result[0]
         all_messages =  result[2]
-
-        #convert msg to a string to send to producer
-        # msg_dict = {'mess_id':latest_message_id,'content':content}
-        # msg = json.dumps(msg_dict)
-
-        msg_to_kafka = json.dumps(
-            all_messages[0],
-            sort_keys=True,
-            indent=1,
-            cls=DjangoJSONEncoder
-        )
-
-        print('here is the msg_to_kafka variable ',msg_to_kafka)
-        print('here is type of msg_to_kafka variable ', type(msg_to_kafka))
+        all_messages[0]['is_new_mess'] = False
 
         '''
         Kafka responsibility:
@@ -136,9 +129,21 @@ while True:
         
         '''
         #PRODUCER PUSHING MESSAGE TO BROKER IF THERE IS NEW MESSAGE
-        if is_new_message(all_messages,all_messages):
+        if is_new_message(all_messages,latest_message_id):
+
+            all_messages[0]['is_new_mess'] = True
+
+            msg_to_kafka = json.dumps(
+                all_messages[0],
+                sort_keys=True,
+                indent=1,
+                cls=DjangoJSONEncoder
+            )
+
+            print(msg_to_kafka)
+
             producer.produce(
-                "faustest-1",
+                "faustest-5",
                 msg_to_kafka,
                 callback=lambda err, decoded_message, original_message=msg_to_kafka: delivery_report(  # noqa
                     err, decoded_message, original_message
@@ -146,10 +151,11 @@ while True:
             )
 
             producer.flush()
-
+            latest_message_id = result[1]
             time.sleep(3)
             continue
         else:
+            latest_message_id = result[1]
             time.sleep(3)
             continue
 

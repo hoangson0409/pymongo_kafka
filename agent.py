@@ -18,17 +18,16 @@ app = faust.App('agent-example')
 # (you can also specify the key_type if your topic uses keys).
 topic = app.topic('adding', value_type=Add)
 
-
-
 @app.agent(topic)
 async def adding(stream):
     async for value in stream:
-        print(type(stream))
+        print(type(value))
         # here we receive Add objects, add a + b.
         yield value.a + value.b
 
 async def send_value() -> None:
     print(await adding.ask(Add(a=4, b=4)))
+    return None
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

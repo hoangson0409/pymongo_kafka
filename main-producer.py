@@ -109,6 +109,7 @@ while True:
     with client:
         #get result from main function
         result = client.loop.run_until_complete(execute(phone, latest_message_id))
+        print('here is the type of clien loop: ',type(client.loop))
 
         #extract latest message_id, content and raw content (all_messages) from telegram
         all_messages = result[1]

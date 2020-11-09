@@ -2,36 +2,38 @@ import faust
 import asyncio
 import json
 
-
-# The model describes the data sent to our agent,
-# We will use a JSON serialized dictionary
-# with two integer fields: a, and b.
-class Add(faust.Record):
-    a: int
-    b: int
-
-# Next, we create the Faust application object that
-# configures our environment.
 app = faust.App(
-    'faust-app',
+    'faust-apple',
     broker='kafka://localhost:9092',
     value_serializer='raw',
+    topic_partitions=1,
 )
 
-# The Kafka topic used by our agent is named 'adding',
-# and we specify that the values in this topic are of the Add model.
-# (you can also specify the key_type if your topic uses keys).
-topic = app.topic('faustest-1')
+topic = app.topic('faustest-5',partitions=1)
+
+table = app.Table(
+    'test1', default=int, partitions=1)
 
 @app.agent(topic)
 async def printer(stream):
     async for value in stream:
-        print(type(value))
-        print(value)
-        print(type(value.decode('utf-8')))
-        print(value.decode('utf-8'))
-        print(json.loads(value.decode('utf-8')))
-        print(type(json.loads(value.decode('utf-8'))))
+        value = json.loads(value.decode('utf-8'))
+
+        print('here is date value of message: ', value['date'] )
+        print('here is date type value of message: ', type(value['date']))
+        table[value['date']] += 1
+        print(table[value['date']])
+        # print("here is all value variable: ", value)
+        # print(type(value))
+        # print(value['is_new_mess'])
+        # print(type(value['is_new_mess']))
+        #
+        # print('here is the value from date field',value['date'])
+        # print(type(value['date']))
+
+
+
+
 
 # @app.agent(topic)
 # async def printer(stream):
