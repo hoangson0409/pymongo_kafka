@@ -1,6 +1,14 @@
 import faust
 import asyncio
 import json
+import datetime as dt
+
+class Tlg_message(faust.Record):
+    content: str
+    date: dt.datetime
+    is_new_message: bool
+    is_trade_signal: bool
+
 
 app = faust.App(
     'faust-apple',
@@ -9,20 +17,43 @@ app = faust.App(
     topic_partitions=1,
 )
 
-topic = app.topic('faustest-5',partitions=1)
+topic = app.topic('faustest-6',partitions=1,value_type=Tlg_message)
 
-table = app.Table(
-    'test1', default=int, partitions=1)
+# table = app.Table(
+#     'test1', default=int, partitions=1)
+
+
 
 @app.agent(topic)
 async def printer(stream):
     async for value in stream:
-        value = json.loads(value.decode('utf-8'))
+        print(value)
+        print(type(value))
 
-        print('here is date value of message: ', value['date'] )
-        print('here is date type value of message: ', type(value['date']))
-        table[value['date']] += 1
-        print(table[value['date']])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# value = json.loads(value.decode('utf-8'))
+        # print('here is date value of message: ', value['date'] )
+        # print('here is date type value of message: ', type(value['date']))
+        # table[value['date']] += 1
+        # print(table[value['date']])
         # print("here is all value variable: ", value)
         # print(type(value))
         # print(value['is_new_mess'])
@@ -35,22 +66,3 @@ async def printer(stream):
 
 
 
-# @app.agent(topic)
-# async def printer(stream):
-#     async for value in stream:
-#         print(type(value))
-#         print(value)
-#
-# @app.agent(topic)
-# async def adding(stream):
-#     async for value in stream:
-#         print(type(stream))
-#         # here we receive Add objects, add a + b.
-#         yield value.a + value.b
-#
-# async def send_value() -> None:
-#     print(await adding.ask(Add(a=4, b=4)))
-#
-# if __name__ == '__main__':
-#     loop = asyncio.get_event_loop()
-#     loop.run_until_complete(send_value())

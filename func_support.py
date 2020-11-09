@@ -1,7 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 from mysql.connector import errorcode
-
+from agent_faustest import Tlg_message
+import datetime as dt
 
 
 
@@ -43,17 +44,31 @@ def delivery_report(err, decoded_message, original_message):
     if err is not None:
         print(err)
 
-def consume(consumer, timeout):
-    while True:
-        message = consumer.poll(timeout)
-        if message is None:
-            continue
-        if message.error():
-            print("Consumer error: {}".format(message.error()))
-            continue
-        yield message
-    consumer.close()
 
+def rawToTlgmessage(all_messages):
+
+    date = all_messages[0]['date']
+    content = all_messages[0]['message']
+    is_new_message = all_messages[0]['is_new_message']
+    is_trade_signal = all_messages[0]['is_trade_signal']
+    tlg_message_inst = Tlg_message(content, date, is_new_message, is_trade_signal)
+    return tlg_message_inst
+
+def hasNumbers(inputString):
+    return any(char.isdigit() for char in inputString)
+
+def is_tradesignal(all_messages):
+    if  (
+        "message" in all_messages[0].keys() and  #Must be a message
+        ('ENTRY' in all_messages[0]['message'] or 'Entry' in all_messages[0]['message']) and #MUST HAVE ENTRY or Entry
+        ('BUY' in all_messages[0]['message'] or 'SELL' in all_messages[0]['message'] or
+        'Buy' in all_messages[0]['message'] or 'Sell' in all_messages[0]['message'] or
+        'buy' in all_messages[0]['message'] or 'sell' in all_messages[0]['message'] ) and  #Must contain the word buy or sell
+        hasNumbers(all_messages[0]['message'])  #Must have number within
+        ):
+        return True
+    else:
+        return False
 
 
 

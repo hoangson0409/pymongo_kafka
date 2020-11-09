@@ -14,7 +14,7 @@ from datetime import date, datetime
 import mysql.connector
 from mysql.connector import Error
 from mysql.connector import errorcode
-from func_support import is_new_message,db_insert,delivery_report,consume
+from func_support import is_new_message,db_insert,delivery_report
 from pymongo import MongoClient
 import socket
 import faust

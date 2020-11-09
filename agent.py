@@ -1,5 +1,6 @@
 import faust
 import asyncio
+import datetime as dt
 
 
 # The model describes the data sent to our agent,
@@ -8,6 +9,7 @@ import asyncio
 class Add(faust.Record):
     a: int
     b: int
+
 
 # Next, we create the Faust application object that
 # configures our environment.
@@ -25,9 +27,10 @@ async def adding(stream):
         # here we receive Add objects, add a + b.
         yield value.a + value.b
 
+
 async def send_value() -> None:
     print(await adding.ask(Add(a=4, b=4)))
-    return None
+
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
