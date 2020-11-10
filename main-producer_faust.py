@@ -101,21 +101,26 @@ latest_message_id = 0
 
 ###############################################################################################
 #Asyncio function taking care of sending message thru kafka
-from agent_faustest import printer,Tlg_message
-from agent import adding, Add
+#from agent_faustest import printer,Tlg_message
+from agent4 import tlg_mess, tlg_mess_printer
 
+#
+# async def send_value_kafka() -> None:
+#     print(await printer_tlg.ask(Tlg_message_cls(
+#         content = all_messages[0]['message'],
+#         date = all_messages[0]['date'],
+#         is_new_message = is_new_message(all_messages,latest_message_id),
+#         is_trade_signal = is_tradesignal(all_messages)
+#     )))
 
-async def send_value_kafka() -> None:
-    print(await printer.ask(Tlg_message(
-        content = all_messages[0]['message'],
-        date = all_messages[0]['date'],
-        is_new_message = is_new_message(all_messages,latest_message_id),
-        is_trade_signal = is_tradesignal(all_messages)
-    )))
-
-async def send_value() -> None:
-    print(await adding.ask(Add(a=4, b=4)))
-
+async def send_value(a,b,c,d) -> None:
+    print(await tlg_mess_printer.ask(
+        tlg_mess(content=a,
+                 date=b,
+                 is_new_message = c,
+                 is_trade_signal = d )))
+# async def send_value(tlg_mess) -> None:
+#     print(await tlg_mess_printer.ask(tlg_mess))
 
 global all_messages
 #################################################################################################
@@ -128,13 +133,17 @@ while True:
         all_messages[0]['is_new_message'] = is_new_message(all_messages,latest_message_id)
         all_messages[0]['is_trade_signal'] = is_tradesignal(all_messages)
 
+
         mess_to_kafka = rawToTlgmessage(all_messages)
         print(mess_to_kafka)
-
         print(type(mess_to_kafka))
 
-
-        result2 = client.loop.run_until_complete(send_value())
+        result2 = client.loop.run_until_complete(send_value(all_messages[0]['message'],
+                                                            all_messages[0]['date'],
+                                                            is_new_message(all_messages,latest_message_id),
+                                                            is_tradesignal(all_messages)))
+        time.sleep(3)
+        continue
 
         #extract latest message_id, content and raw content (all_messages) from telegram
 

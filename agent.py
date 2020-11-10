@@ -28,10 +28,10 @@ async def adding(stream):
         yield value.a + value.b
 
 
-async def send_value() -> None:
-    print(await adding.ask(Add(a=4, b=4)))
-
-
-if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(send_value())
+# async def send_value() -> None:
+#     print(await adding.ask(Add(a=4, b=4)))
+#
+#
+# if __name__ == '__main__':
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(send_value())
