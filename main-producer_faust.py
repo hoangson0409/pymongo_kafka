@@ -14,7 +14,7 @@ from datetime import date, datetime
 import mysql.connector
 from mysql.connector import Error
 from mysql.connector import errorcode
-from func_support import is_new_message,db_insert,delivery_report,rawToTlgmessage,is_tradesignal
+from func_support import is_new_message,db_insert,delivery_report,is_tradesignal
 from pymongo import MongoClient
 import socket
 from django.core.serializers.json import DjangoJSONEncoder
@@ -89,8 +89,17 @@ async def execute(phone,latest_message_id):
 
         return (content,latest_message_id,all_messages)
 
+###############################################################################################
+#Asyncio function taking care of sending message thru kafka
 
+from agent4 import tlg_mess, tlg_mess_printer
 
+async def send_value(a,b,c,d) -> None:
+    print(await tlg_mess_printer.ask(
+        tlg_mess(content=a,
+                 date=b,
+                 is_new_message = c,
+                 is_trade_signal = d )))
 
 #################################################################################################################
 #####ACTUAL RUNNING PART#########################################################################################
@@ -99,49 +108,27 @@ global latest_message_id
 latest_message_id = 0
 
 
-###############################################################################################
-#Asyncio function taking care of sending message thru kafka
-#from agent_faustest import printer,Tlg_message
-from agent4 import tlg_mess, tlg_mess_printer
 
-#
-# async def send_value_kafka() -> None:
-#     print(await printer_tlg.ask(Tlg_message_cls(
-#         content = all_messages[0]['message'],
-#         date = all_messages[0]['date'],
-#         is_new_message = is_new_message(all_messages,latest_message_id),
-#         is_trade_signal = is_tradesignal(all_messages)
-#     )))
-
-async def send_value(a,b,c,d) -> None:
-    print(await tlg_mess_printer.ask(
-        tlg_mess(content=a,
-                 date=b,
-                 is_new_message = c,
-                 is_trade_signal = d )))
-# async def send_value(tlg_mess) -> None:
-#     print(await tlg_mess_printer.ask(tlg_mess))
-
-global all_messages
-#################################################################################################
 while True:
     with client:
         #get result from main function
         result = client.loop.run_until_complete(execute(phone, latest_message_id))
 
         all_messages = result[2]
-        all_messages[0]['is_new_message'] = is_new_message(all_messages,latest_message_id)
-        all_messages[0]['is_trade_signal'] = is_tradesignal(all_messages)
 
 
-        mess_to_kafka = rawToTlgmessage(all_messages)
-        print(mess_to_kafka)
-        print(type(mess_to_kafka))
+        '''
+                Kafka responsibility:
+                After receiving message from telegram, the following block of code will use Kafka producer to push message to Kafka broker
+
+        '''
 
         result2 = client.loop.run_until_complete(send_value(all_messages[0]['message'],
                                                             all_messages[0]['date'],
                                                             is_new_message(all_messages,latest_message_id),
                                                             is_tradesignal(all_messages)))
+        #Get latest message ID
+        latest_message_id = result[1]
         time.sleep(3)
         continue
 
@@ -151,11 +138,7 @@ while True:
 
 
 
-        '''
-        Kafka responsibility:
-        After receiving message from telegram, the following block of code will use Kafka producer to push message to Kafka broker
-        
-        '''
+
         #PRODUCER PUSHING MESSAGE TO BROKER IF THERE IS NEW MESSAGE
         # if is_new_message(all_messages,latest_message_id):
         #

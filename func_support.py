@@ -45,15 +45,6 @@ def delivery_report(err, decoded_message, original_message):
         print(err)
 
 
-def rawToTlgmessage(all_messages):
-
-    date = all_messages[0]['date']
-    content = all_messages[0]['message']
-    is_new_message = all_messages[0]['is_new_message']
-    is_trade_signal = all_messages[0]['is_trade_signal']
-    tlg_message_inst = Tlg_message(content, date, is_new_message, is_trade_signal)
-    return tlg_message_inst
-
 def hasNumbers(inputString):
     return any(char.isdigit() for char in inputString)
 

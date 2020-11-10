@@ -1,5 +1,5 @@
 0
-80
+81
 __consumer_offsets 43 0
 __consumer_offsets 30 0
 agent-example-__assignor-__leader 0 0
@@ -14,17 +14,18 @@ __consumer_offsets 40 0
 f-reply-2c303164-1109-4a05-b804-f1c4711e664a 0 6
 faust-tet-tlg-mess1-topic 0 0
 __consumer_offsets 27 0
-faust-tet-tlg-mess1-__assignor-__leader 0 0
+f-reply-91fc7d81-dd77-4559-91a0-5417c24cc7ba 0 6
 f-reply-315262e1-6984-44eb-9963-27a51e4f4677 0 7
 f-reply-cbb519eb-e076-4f6a-a00e-8ea4d320878f 0 16
 __consumer_offsets 12 0
+faust-tet-tlg-mess1-__assignor-__leader 0 0
 __consumer_offsets 36 0
 __consumer_offsets 45 8
 __consumer_offsets 10 0
 __consumer_offsets 11 0
 f-reply-41058c06-3b71-459a-8031-42738a699749 0 6
 faust-tet2-__assignor-__leader 0 0
-__consumer_offsets 20 54
+__consumer_offsets 20 60
 __consumer_offsets 18 0
 f-reply-43dc3043-a7f1-4ac9-a241-52348111d044 0 3
 f-reply-94d14d02-1d49-4058-b3eb-48071085a510 0 1
@@ -71,7 +72,7 @@ agent-example-tet5-__assignor-__leader 0 0
 faust-tet2 0 0
 __consumer_offsets 47 0
 __consumer_offsets 7 0
-tlg_message 0 42
+tlg_message 0 48
 __consumer_offsets 22 10
 __consumer_offsets 46 0
 __consumer_offsets 31 0

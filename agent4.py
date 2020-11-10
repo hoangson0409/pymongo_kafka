@@ -3,9 +3,8 @@ import asyncio
 import datetime as dt
 
 
-# The model describes the data sent to our agent,
-# We will use a JSON serialized dictionary
-# with two integer fields: a, and b.
+# Define a class inheriting faust.Record with its attributes
+# content, date, is_new_message, is_trade_signal
 class tlg_mess(faust.Record):
     content: str
     date: dt.datetime
@@ -14,13 +13,10 @@ class tlg_mess(faust.Record):
 
 
 
-# Next, we create the Faust application object that
-# configures our environment.
+# Declaring application
 app = faust.App('agent-example-tet6')
 
-# The Kafka topic used by our agent is named 'adding',
-# and we specify that the values in this topic are of the Add model.
-# (you can also specify the key_type if your topic uses keys).
+# Declaring topic tlg_message
 topic = app.topic('tlg_message', value_type=tlg_mess)
 
 @app.agent(topic)
@@ -31,10 +27,3 @@ async def tlg_mess_printer(stream):
         yield value.content
 
 
-# async def send_value() -> None:
-#     print(await adding.ask(Add(a=4, b=4)))
-#
-#
-# if __name__ == '__main__':
-#     loop = asyncio.get_event_loop()
-#     loop.run_until_complete(send_value())
