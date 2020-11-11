@@ -83,14 +83,22 @@ async def execute(phone,latest_message_id):
 ###############################################################################################
 #Asyncio function taking care of sending message thru kafka
 
-from agent4 import tlg_mess, tlg_mess_printer
+from agent4 import tlg_mess, tlg_mess_printer_new_message, tlg_mess_printer_new_tradesignal
+
 
 async def send_value(a,b,c,d) -> None:
-    print(await tlg_mess_printer.ask(
+    print(await tlg_mess_printer_new_message.ask(
         tlg_mess(content=a,
                  date=b,
                  is_new_message = c,
                  is_trade_signal = d )))
+
+
+
+# async def multiple_tasks(task1,task2):
+#
+#   res = await asyncio.gather(task1,task2, return_exceptions=True)
+#   return res
 
 #################################################################################################################
 #####ACTUAL RUNNING PART#########################################################################################
@@ -113,10 +121,13 @@ while True:
                 After receiving message from telegram, the following block of code will use Kafka producer to push message to Kafka broker
         '''
 
+
         result2 = client.loop.run_until_complete(send_value(all_messages[0]['message'],
                                                             all_messages[0]['date'],
                                                             is_new_message(all_messages,latest_message_id),
                                                             is_tradesignal(all_messages)))
+
+
         #Get latest message ID
         latest_message_id = result[1]
         time.sleep(3)

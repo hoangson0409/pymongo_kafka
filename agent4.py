@@ -22,20 +22,46 @@ topic = app.topic('tlg_message', value_type=tlg_mess)
 table = app.Table(
     'tlg_message_table0', default=int, partitions=1)
 
-@app.agent(topic)
-async def tlg_mess_printer(stream):
+table2 = app.Table(
+    'tlg_message_tradesignal_table', default=int, partitions=1)
+
+@app.agent()
+async def tlg_mess_printer_new_tradesignal(stream):
     async for value in stream:
         #.filter(lambda value : value.is_new_message == True) :
-        print(value)
-        print(type(value.date))
+        print('****************************************')
+        print('New Trade Signal Agent Info')
+        print('here is the value: ', value, ' with type ', type(value))
+
+        key = value.date.split('T')[0]
+        print(key,type(key))
+        if value.is_trade_signal:
+            table2[key] += 1
+
+        print(table2[key])
+        print('#########################################')
+
+        # here we receive Add objects, add a + b.
+        yield value.content
+
+@app.agent(topic,sink=[tlg_mess_printer_new_tradesignal])
+async def tlg_mess_printer_new_message(stream):
+    async for value in stream:
+        #.filter(lambda value : value.is_new_message == True) :
+        print('****************************************')
+        print('New Message Agent Info')
+        print('here is the value: ',value, ' with type ',type(value))
         key = value.date.split('T')[0]
         print(key,type(key))
         if value.is_new_message:
             table[key] += 1
+
         print(table[key])
+        print('#########################################')
 
         # here we receive Add objects, add a + b.
-        yield value.content
+        yield value
+
 
 # @app.agent(topic,sink=[tlg_mess_printer2])
 # async def tlg_mess_printer(stream):
@@ -43,3 +69,5 @@ async def tlg_mess_printer(stream):
 #         print('FIRST AGENT SPEAKING')
 #
 #         yield value
+if __name__ == '__main__':
+    app.main()
