@@ -1,6 +1,5 @@
-from confluent_kafka import Producer,Consumer,KafkaError
+
 import configparser
-import json
 from telethon import TelegramClient
 from telethon.errors import SessionPasswordNeededError
 from telethon.tl.functions.messages import (GetHistoryRequest)
@@ -11,13 +10,7 @@ import numpy as np
 import time
 import asyncio
 from datetime import date, datetime
-import mysql.connector
-from mysql.connector import Error
-from mysql.connector import errorcode
-from func_support import is_new_message,db_insert,delivery_report,is_tradesignal
-from pymongo import MongoClient
-import socket
-from django.core.serializers.json import DjangoJSONEncoder
+from func_support import is_new_message,is_tradesignal
 
 
 
@@ -47,8 +40,6 @@ async def execute(phone,latest_message_id):
             await client.sign_in(phone, input('Enter the code: '))
         except SessionPasswordNeededError:
             await client.sign_in(password=input('Password: '))
-
-
 
 
     entity = channel
@@ -120,7 +111,6 @@ while True:
         '''
                 Kafka responsibility:
                 After receiving message from telegram, the following block of code will use Kafka producer to push message to Kafka broker
-
         '''
 
         result2 = client.loop.run_until_complete(send_value(all_messages[0]['message'],
@@ -132,37 +122,14 @@ while True:
         time.sleep(3)
         continue
 
-        #extract latest message_id, content and raw content (all_messages) from telegram
 
 
 
 
 
 
-        #PRODUCER PUSHING MESSAGE TO BROKER IF THERE IS NEW MESSAGE
-        # if is_new_message(all_messages,latest_message_id):
-        #
-        #     all_messages[0]['is_new_mess'] = True
-        #
-        #     msg_to_kafka = json.dumps(
-        #         all_messages[0],
-        #         sort_keys=True,
-        #         indent=1,
-        #         cls=DjangoJSONEncoder
-        #     )
-        #
-        #     print(msg_to_kafka)
-        #
-        #     result2 = client.loop.run_until_complete(send_value())
-        #     latest_message_id = result[1]
-        #     time.sleep(3)
-        #
-        #     continue
-        # else:
-        #     latest_message_id = result[1]
-        #     time.sleep(3)
-        #
-        #     continue
+
+
 
 
 
