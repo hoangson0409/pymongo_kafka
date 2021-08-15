@@ -5,3 +5,9 @@ This project demonstrate Telegram message reader using Kafka producer,  then usi
 - faust-stream demonstrate a solution with confluent-kafka as main Kafka Producer and faust as consumer 
 - faust-stream-full demonstrate a solution with faust API as an end to end producer and consumer
 
+### To use Faust Stream API
+
+- Run zookeeper and 3 Kafka servers
+- `faust -A agent4 worker -l info`
+- `python main_producer_faust.py`
+
