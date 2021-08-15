@@ -1,1 +1,0 @@
-%MYSQL_HOME%\bin\mysqld --console

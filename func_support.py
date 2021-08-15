@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 from mysql.connector import errorcode
-from agent_faustest import Tlg_message
+
 import datetime as dt
 
 

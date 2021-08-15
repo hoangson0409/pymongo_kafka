@@ -1,1 +1,0 @@
-%KAFKA_HOME%\bin\windows\kafka-console-producer.bat --topic value_printer --broker-list localhost:9092

@@ -14,7 +14,7 @@ class tlg_mess(faust.Record):
 
 
 # Declaring application
-app = faust.App('agent-example-tet6')
+app = faust.App('agent-example-tet6',topic_partitions=1)
 
 # Declaring topic tlg_message
 topic = app.topic('tlg_message', value_type=tlg_mess)

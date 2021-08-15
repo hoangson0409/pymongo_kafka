@@ -6,7 +6,7 @@ from telethon.tl.functions.messages import (GetHistoryRequest)
 from telethon.tl.types import (
     PeerChannel
 )
-import numpy as np
+
 import time
 import asyncio
 from datetime import date, datetime
